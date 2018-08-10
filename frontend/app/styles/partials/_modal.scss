@@ -1,0 +1,72 @@
+.modal {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  background-color: black;
+  border-radius: 4px;
+  margin-right: -50%;
+  height: 50vh;
+  width: 25vw;
+  transform : translate(-50%, -50%);
+  box-shadow: 0px .6rem 2rem #c6ffdd;
+  min-width: 300px;
+  min-height: 400px;
+  &__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,.65);
+  }
+  &__close {
+    transition: all .25s;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 1rem;
+    color: rgba(#c6ffdd, .5);
+    cursor: pointer;
+    &:hover {
+      transform: scale(1.1);
+      color: #c6ffdd;
+    }
+  }
+  &__players {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    padding: 1rem;
+    & label {
+      padding: 1rem;
+    }
+    & select {
+      margin: 1rem;
+    }
+  }
+}
+
+h2 {
+  color: white !important;
+  bottom: 0;
+}
+
+.ReactModalPortal > * {
+    // transition: all .25s;
+    opacity: 0;
+}
+.ReactModal__Overlay {
+    transition: opacity 200ms ease-in-out;
+    &--after-open {
+        opacity: 1;
+    }
+    &--before-close {
+        opacity: 0;
+    }
+}

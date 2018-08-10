@@ -1,0 +1,23 @@
+.auth {
+  display: flex;
+  flex-direction: column;
+  &__register {
+    margin: 1rem;
+    padding-top: 4rem;
+  }
+}
+
+.back__arrow {
+  &:hover {
+    transform: translate(-10px);
+  }
+}
+
+.back__arrow, .logout {
+  cursor: pointer;
+  margin: 15;
+  transition: all .25s;
+  &:hover {
+    color: #ff83b0;
+  }
+}
