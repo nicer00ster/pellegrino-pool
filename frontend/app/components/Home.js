@@ -36,7 +36,9 @@ class Home extends React.Component {
       password: '',
       firstName: '',
       lastName: '',
+      gameTitle: '',
       modalOpen: false,
+      opponent: null,
       users: null
     };
   }
@@ -51,10 +53,12 @@ class Home extends React.Component {
         .then(data => {
           console.log(data);
           if(data.success) {
+            console.log(data);
             this.setState({
               token,
               loading: false,
-              name: data.firstName
+              name: data.firstName,
+              email: data.email
             })
           } else {
             this.setState({ loading: false })
@@ -77,6 +81,7 @@ class Home extends React.Component {
   handlePassword = e => this.setState({ password: e.target.value });
   handleFirstName = e => this.setState({ firstName: e.target.value });
   handleLastName = e => this.setState({ lastName: e.target.value });
+  handleGameTitle = e => this.setState({ gameTitle: e.target.value });
 
   openModal = () => {
     this.setState({ modalOpen: true });
@@ -166,9 +171,31 @@ class Home extends React.Component {
       let users = [];
       for(let user in data) {
         users.push(data[user]);
-        // console.log(data[user].firstName);
       }
       this.setState({ users })
+    })
+  }
+
+  createGame = e => {
+    const { gameTitle, email, opponent } = this.state;
+    e.preventDefault();
+    fetch('/api/game/create', {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        owner: email,
+        title: gameTitle,
+        opponent
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+    })
+    .then(() => {
+      this.closeModal()
     })
   }
 
@@ -210,24 +237,25 @@ class Home extends React.Component {
           closeTimeoutMS={250}
           contentLabel="Create a Game">
           <h2 ref={subtitle => this.subtitle = subtitle}>CREATE A GAME</h2>
-          <h4>CHOOSE PLAYERS</h4>
+          <input onChange={e => this.handleGameTitle(e)} type="text" placeholder="Match Title"/>
           <form className="modal__players">
+            <h4>CHOOSE PLAYERS</h4>
             <label>Player 1</label>
             <select disabled>
               <option label={titleCase(name)} value="AuthedUser">{titleCase(name)}</option>
             </select>
             <label>Player 2</label>
-            <select>
+            <select defaultValue="Player Two" onChange={e => this.setState({ opponent: e.target.value })}>
              { users
                 ? users.map((user, key) => {
-                  return <option key={key} value={user.firstName}>
+                  return <option key={key}>
                           {titleCase(user.firstName)}{' '}{titleCase(user.lastName)}
                          </option>
                   })
                 : null
               }
             </select>
-            <button>START!</button>
+            <button onClick={(e) => this.createGame(e)}>START!</button>
           </form>
           <FiXSquare className="modal__close" size={35} onClick={this.closeModal} />
         </Modal>

@@ -16,6 +16,10 @@ const UserSessionSchema = new mongoose.Schema({
   firstName: {
     type: String,
     default: ''
+  },
+  email: {
+    type: String,
+    default: ''
   }
 })
 

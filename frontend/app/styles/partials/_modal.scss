@@ -40,6 +40,7 @@
   }
   &__players {
     display: flex;
+    align-items: center;
     flex-direction: column;
     margin: 1rem;
     padding: 1rem;
@@ -48,17 +49,12 @@
     }
     & select {
       margin: 1rem;
+      width: 100%;
     }
   }
 }
 
-h2 {
-  color: white !important;
-  bottom: 0;
-}
-
 .ReactModalPortal > * {
-    // transition: all .25s;
     opacity: 0;
 }
 .ReactModal__Overlay {

@@ -12,8 +12,8 @@ module.exports = (app) => {
       return res.send({
         success: false,
         error: 'Make sure all fields are filled out!'
-      })
-    }
+      });
+    };
 
     User.find({
       email: email
@@ -22,13 +22,13 @@ module.exports = (app) => {
         return res.send({
           success: false,
           error: 'Server error.'
-        })
+        });
       } else if (prevUser.length > 0) {
       return res.send({
         success: false,
         error: 'Account already exists.'
-      })
-    }
+      });
+    };
   });
 
     const newUser = new User();
@@ -42,15 +42,15 @@ module.exports = (app) => {
         return res.send({
           success: false,
           error: 'Server error.'
-        })
-      }
+        });
+      };
       return res.send({
         success: true,
         message: 'Authenticated!',
         info: user
-      })
-    })
-  })
+      });
+    });
+  });
 
 
   app.post('/api/account/login', (req, res, next) => {
@@ -61,8 +61,8 @@ module.exports = (app) => {
       return res.send({
         success: false,
         error: 'All fields must be filled out!'
-      })
-    }
+      });
+    };
 
     User.find({
       email: email
@@ -72,42 +72,43 @@ module.exports = (app) => {
           success: false,
           error: 'Server error.'
         });
-      }
+      };
       if(users.length != 1) {
         return res.send({
           success: false,
           error: 'User doesn\'t exist!'
         });
-      }
+      };
 
       const user = users[0];
       if(!user.validPassword(password)) {
         return res.send({
           success: false,
           error: 'Invalid password.'
-        })
-      }
+        });
+      };
 
       const userSession = new UserSession();
       userSession.uid = user._id;
       userSession.firstName = user.firstName;
+      userSession.email = user.email
       userSession.save(async (err, data) => {
         if(err) {
           return res.send({
             success: false,
             error: 'Server error.'
-          })
-        }
+          });
+        };
         return res.send({
           success: true,
           message: 'Successfully signed in.',
           token: data._id,
-          name: data.firstName
-        })
-      })
-    })
-
-  })
+          name: data.firstName,
+          email: data.email
+        });
+      });
+    });
+  });
 
   app.get('/api/account/verify', (req, res, next) => {
     const { query } = req;
@@ -122,7 +123,7 @@ module.exports = (app) => {
           success: false,
           error: 'Server error.'
         });
-      }
+      };
       if(sessions.length != 1) {
         return res.send({
           success: false,
@@ -132,11 +133,12 @@ module.exports = (app) => {
         return res.send({
           success: true,
           message: 'Successfully verified.',
-          firstName: sessions[0].firstName
-        })
-      }
-    })
-  })
+          firstName: sessions[0].firstName,
+          email: sessions[0].email
+        });
+      };
+    });
+  });
 
   app.get('/api/account/logout', (req, res, next) => {
     const { query } = req;
@@ -154,12 +156,12 @@ module.exports = (app) => {
           success: false,
           error: 'Something went wrong.'
         });
-      }
+      };
       return res.send({
         success: true,
         message: 'Successfully logged out.'
-      })
-    })
+      });
+    });
   });
 
   app.get('/api/users', (req, res, next) => {
@@ -177,81 +179,78 @@ module.exports = (app) => {
           lastName: user.lastName
         };
       });
-      res.send(userList)
+      return res.send(userList)
     });
   });
 
   app.post('/api/game/create', (req, res, next) => {
-    const { title, players, winner, uid } = req.body;
+    const { title, players, winner, email, opponent } = req.body;
 
-    // if(!title || !players) {
-    //   return res.send({
-    //     success: false,
-    //     error: 'Make sure you have a title & players chosen!'
-    //   })
-    // }
-    User.find({
-      email: req.body.email
-    }, (err, users) => {
+    User.find({ owner: email }, (err, users) => {
+      const user = users[0];
+      const newGame = new Game();
+      newGame.owner = user.email;
+      newGame.title = title;
+      newGame.players = [`${user.firstName} ${user.lastName}`, `${opponent}`];
+      newGame.save((err, data) => {
+        if(err) {
+          return res.send({
+            success: false,
+            error: 'Failed to create game.'
+          });
+        };
+        return res.send({
+          success: true,
+          message: 'New game created.',
+          info: data
+        });
+      });
+    });
+  });
+
+  app.get('/api/game/matches', (req, res, next) => {
+    Game.find({}, (err, matches) => {
+      console.log(matches);
       if(err) {
         return res.send({
           success: false,
-          error: 'Server error.'
-        });
-      }
-      if(users.length != 1) {
-        return res.send({
-          success: false,
-          error: 'User doesn\'t exist!'
-        });
-      }
-
-      const user = users[0];
-      if(!user.validPassword(password)) {
-        return res.send({
-          success: false,
-          error: 'Invalid password.'
+          error: 'No matches are currently available.'
         })
       }
+      const matchList = {};
+      matches.forEach(match => {
+        matchList[match.title] = {
+          uid: match._id,
+          title: match.title,
+          owner: match.owner,
+          players: match.players,
+          winner: match.winner
+        };
+      });
+      return res.send(matchList)
+    });
+  });
 
-      // const userSession = new UserSession();
-      // userSession.uid = user._id;
-      // userSession.firstName = user.firstName;
-      // userSession.save(async (err, data) => {
-      //   if(err) {
-      //     return res.send({
-      //       success: false,
-      //       error: 'Server error.'
-      //     })
-      //   }
-      //   return res.send({
-      //     success: true,
-      //     message: 'Successfully signed in.',
-      //     token: data._id,
-      //     name: data.firstName
-      //   })
-      // })
-    })
+  app.post('/api/game/matches', (req, res, next) => {
+    const { email, winner } = req.body;
 
-    // const newGame = new Game();
-    // newGame.uid = user._id;
-    // newGame.title = title;
-    // newGame.players = players;
-    // newGame.winner = winner;
-    //
-    // newGame.save((err, data) => {
-    //   if(err) {
-    //     return res.send({
-    //       success: false,
-    //       error: 'Something went wrong!'
-    //     })
-    //   }
-    //   return res.send({
-    //     success: true,
-    //     message: `New game started: ${title}`,
-    //     info: data
-    //   })
-    // })
+    Game.findByIdAndUpdate({
+      // id: ,
+    }, {
+      $set: { winner }
+    }, null, (err, data) => {
+      if(err) {
+        console.log(err);
+        return res.send({
+          success: false,
+          error: 'Something went wrong.'
+        });
+      };
+      return res.send({
+        success: true,
+        message: `The winner is ${data.winner}.`
+      });
+    });
   });
 
 };
