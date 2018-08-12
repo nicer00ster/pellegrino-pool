@@ -38,7 +38,7 @@ class Home extends React.Component {
       lastName: '',
       gameTitle: '',
       modalOpen: false,
-      opponent: null,
+      opponent: 'Player Two',
       users: null
     };
   }
@@ -53,7 +53,6 @@ class Home extends React.Component {
         .then(data => {
           console.log(data);
           if(data.success) {
-            console.log(data);
             this.setState({
               token,
               loading: false,
@@ -83,17 +82,9 @@ class Home extends React.Component {
   handleLastName = e => this.setState({ lastName: e.target.value });
   handleGameTitle = e => this.setState({ gameTitle: e.target.value });
 
-  openModal = () => {
-    this.setState({ modalOpen: true });
-  }
-
-  afterOpenModal = () => {
-    this.populateUsers()
-  }
-
-  closeModal = () => {
-    this.setState({ modalOpen: false, users: '' });
-  }
+  openModal = () => this.setState({ modalOpen: true });
+  afterOpenModal = () => this.populateUsers();
+  closeModal = () => this.setState({ modalOpen: false, users: '' });
 
   onLogin = () => {
     const { email, password } = this.state;
@@ -187,6 +178,7 @@ class Home extends React.Component {
       body: JSON.stringify({
         owner: email,
         title: gameTitle,
+        email,
         opponent
       })
     })
@@ -195,12 +187,12 @@ class Home extends React.Component {
       console.log(data);
     })
     .then(() => {
-      this.closeModal()
-    })
-  }
+      this.closeModal();
+    });
+  };
 
   render() {
-    const { loading, token, name, users } = this.state;
+    const { loading, token, name, users, opponent } = this.state;
     if(loading) {
       return <Spinner color="white" fadeIn="quarter" name="cube-grid" />
     }
@@ -245,7 +237,8 @@ class Home extends React.Component {
               <option label={titleCase(name)} value="AuthedUser">{titleCase(name)}</option>
             </select>
             <label>Player 2</label>
-            <select defaultValue="Player Two" onChange={e => this.setState({ opponent: e.target.value })}>
+            <select defaultValue={opponent} onChange={e => this.setState({ opponent: e.target.value })}>
+            <option value={opponent} disabled>Player Two</option>
              { users
                 ? users.map((user, key) => {
                   return <option key={key}>

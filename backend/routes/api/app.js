@@ -134,7 +134,8 @@ module.exports = (app) => {
           success: true,
           message: 'Successfully verified.',
           firstName: sessions[0].firstName,
-          email: sessions[0].email
+          email: sessions[0].email,
+          uid: sessions[0].uid
         });
       };
     });
@@ -186,17 +187,19 @@ module.exports = (app) => {
   app.post('/api/game/create', (req, res, next) => {
     const { title, players, winner, email, opponent } = req.body;
 
-    User.find({ owner: email }, (err, users) => {
+    User.find({ email }, (err, users) => {
       const user = users[0];
       const newGame = new Game();
-      newGame.owner = user.email;
+      newGame.owner = user._id;
       newGame.title = title;
       newGame.players = [`${user.firstName} ${user.lastName}`, `${opponent}`];
+      // newGame._id = user._id
       newGame.save((err, data) => {
         if(err) {
           return res.send({
             success: false,
-            error: 'Failed to create game.'
+            error: 'Failed to create game.',
+            info: err
           });
         };
         return res.send({
@@ -210,32 +213,37 @@ module.exports = (app) => {
 
   app.get('/api/game/matches', (req, res, next) => {
     Game.find({}, (err, matches) => {
-      console.log(matches);
-      if(err) {
-        return res.send({
-          success: false,
-          error: 'No matches are currently available.'
-        })
-      }
-      const matchList = {};
-      matches.forEach(match => {
-        matchList[match.title] = {
-          uid: match._id,
-          title: match.title,
-          owner: match.owner,
-          players: match.players,
-          winner: match.winner
-        };
+      res.send({
+        info: matches
       });
-      return res.send(matchList)
-    });
+    })
+    // Game.find({}, (err, matches) => {
+    //   console.log(matches);
+    //   if(err) {
+    //     return res.send({
+    //       success: false,
+    //       error: 'No matches are currently available.'
+    //     })
+    //   }
+    //   const matchList = {};
+    //   matches.forEach(match => {
+    //     matchList[match.title] = {
+    //       uid: match._id,
+    //       title: match.title,
+    //       owner: match.owner,
+    //       players: match.players,
+    //       winner: match.winner
+    //     };
+    //   });
+    //   return res.send(matchList)
+    // });
   });
 
   app.post('/api/game/matches', (req, res, next) => {
-    const { email, winner } = req.body;
+    const { winner, _id } = req.body;
 
     Game.findByIdAndUpdate({
-      // id: ,
+      _id
     }, {
       $set: { winner }
     }, null, (err, data) => {
@@ -248,7 +256,8 @@ module.exports = (app) => {
       };
       return res.send({
         success: true,
-        message: `The winner is ${data.winner}.`
+        message: `The winner is ${data.winner}.`,
+        info: data
       });
     });
   });

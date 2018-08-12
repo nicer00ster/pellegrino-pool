@@ -98,6 +98,14 @@ a {
 th, tr, td {
   padding: 1rem;
 }
+td.select, tr.select {
+  cursor: pointer;
+  transition: all .15s;
+  &:hover {
+    box-shadow: 0 0 8px #c6ffdd;
+    transform: scale(1.1);
+  }
+}
 table {
   overflow: scroll;
 }
@@ -154,6 +162,7 @@ input[type=number] {
  width: 120px;
  padding: 5px 25px;
 }
+
 
 button {
  text-transform: uppercase;

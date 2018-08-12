@@ -11,7 +11,7 @@
   background-color: black;
   border-radius: 4px;
   margin-right: -50%;
-  height: 50vh;
+  // height: 50vh;
   width: 25vw;
   transform : translate(-50%, -50%);
   box-shadow: 0px .6rem 2rem #c6ffdd;
@@ -48,10 +48,24 @@
       padding: 1rem;
     }
     & select {
+      min-height: 25px;
       margin: 1rem;
       width: 100%;
     }
   }
+}
+
+.title {
+  color: #fbd786;
+}
+
+.winner {
+  color: palegreen;
+  font-weight: 600;
+}
+
+.loser {
+  color: #f7797d;
 }
 
 .ReactModalPortal > * {

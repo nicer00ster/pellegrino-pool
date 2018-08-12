@@ -46,7 +46,7 @@ export default class App extends React.Component {
           : this.props.children
         }
         </main>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     )
   }
