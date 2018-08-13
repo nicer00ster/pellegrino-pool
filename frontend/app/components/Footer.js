@@ -3,11 +3,15 @@ import { TiSocialFacebookCircular, TiSocialTwitterCircular, TiSocialInstagramCir
 
 const Footer = () => (
   <footer>
-    <hr />
-    <p>Pellegrino & Pool</p>
-    <a href="#"><TiSocialFacebookCircular size={50} /></a>
-    <a href="#"><TiSocialTwitterCircular size={50} /></a>
-    <a href="#"><TiSocialInstagramCircular size={50} /></a>
+    <div>
+      <hr/>
+      <p>Pellegrino & Pool</p>
+      <div>
+        <a href="#"><TiSocialFacebookCircular size={35} /></a>
+        <a href="#"><TiSocialTwitterCircular size={35} /></a>
+        <a href="#"><TiSocialInstagramCircular size={35} /></a>
+      </div>
+    </div>
   </footer>
 );
 

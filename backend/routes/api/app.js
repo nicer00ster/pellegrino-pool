@@ -152,7 +152,6 @@ module.exports = (app) => {
       $set: { active: true }
     }, null, (err, sessions) => {
       if(err) {
-        console.log(err);
         return res.send({
           success: false,
           error: 'Something went wrong.'
@@ -177,7 +176,8 @@ module.exports = (app) => {
       users.forEach(user => {
         userList[user._id] = {
           firstName: user.firstName,
-          lastName: user.lastName
+          lastName: user.lastName,
+          gamesWon: user.gamesWon
         };
       });
       return res.send(userList)
@@ -217,49 +217,40 @@ module.exports = (app) => {
         info: matches
       });
     })
-    // Game.find({}, (err, matches) => {
-    //   console.log(matches);
-    //   if(err) {
-    //     return res.send({
-    //       success: false,
-    //       error: 'No matches are currently available.'
-    //     })
-    //   }
-    //   const matchList = {};
-    //   matches.forEach(match => {
-    //     matchList[match.title] = {
-    //       uid: match._id,
-    //       title: match.title,
-    //       owner: match.owner,
-    //       players: match.players,
-    //       winner: match.winner
-    //     };
-    //   });
-    //   return res.send(matchList)
-    // });
   });
 
   app.post('/api/game/matches', (req, res, next) => {
     const { winner, _id } = req.body;
-
-    Game.findByIdAndUpdate({
-      _id
+    User.findOneAndUpdate({
+      firstName: winner.split(' ')[0],
+      lastName: winner.split(' ')[1]
     }, {
-      $set: { winner }
-    }, null, (err, data) => {
+      $inc: { gamesWon: 1 }
+    }, (err, data) => {
       if(err) {
-        console.log(err);
-        return res.send({
+        res.send({
           success: false,
           error: 'Something went wrong.'
         });
       };
-      return res.send({
-        success: true,
-        message: `The winner is ${data.winner}.`,
-        info: data
+      Game.findByIdAndUpdate({
+        _id
+      }, {
+        $set: { winner }
+      }, null, (err, data) => {
+        if(err) {
+          return res.send({
+            success: false,
+            error: 'Something went wrong.'
+          });
+        };
+        return res.send({
+          success: true,
+          message: `The winner is ${data.winner}.`,
+          info: data
+        });
       });
-    });
+    })
   });
 
 };

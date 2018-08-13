@@ -1,0 +1,95 @@
+.rankings {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  margin: 2rem;
+  padding: 2rem;
+}
+
+
+span {
+  letter-spacing: 2px;
+  font-size: 18px;
+  &.noobie {
+    color: grey;
+  }
+
+  &.bronze {
+    color: rgb(255, 178, 158);
+    font-weight: 600;
+  }
+
+  &.silver {
+    color: rgb(255, 255, 255);
+    text-shadow: 0 0 3px #ffffff;
+    font-weight: 600;
+    text-shadow:
+      0 0 20px rgb(254,252,201),
+      10px -10px 30px rgb(255, 255, 255),
+      -20px -20px 40px rgb(242, 242, 242),
+      20px -40px 50px rgb(235, 235, 235)
+  }
+
+  &.gold {
+    color: rgb(255, 234, 93);
+    text-shadow:
+      0 0 20px rgb(254,252,201),
+      10px -10px 30px rgb(254,236,133),
+      -20px -20px 40px rgb(255,174,52),
+      20px -40px 50px rgb(236,118,12),
+      -20px -60px 60px rgb(205,70,6),
+      0 -80px 70px rgb(151,55,22),
+      10px -90px 80px rgb(69,27,14);
+    font-weight: 600;
+  }
+
+  &.leader {
+    color: #c6ffdd;
+    font-weight: bold;
+  }
+}
+
+.legend {
+  list-style: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+    @media screen and (max-width: 600px) {
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+          -ms-flex-direction: row;
+              flex-direction: row;
+  }
+}
+.legend li {
+  float: left;
+  margin-right: 10px;
+}
+.legend span {
+  border: 1px solid transparent;
+  border-radius: 4px;
+  float: left;
+  width: 16px;
+  height: 16px;
+  margin: 2px;
+ }
+.legend .noobie {
+   background-color: grey;
+ }
+.legend .bronze {
+   background-color: rgb(255, 178, 158);
+ }
+.legend .silver {
+   background-color: rgb(255, 255, 255);
+ }
+.legend .gold {
+   background-color: rgb(255, 234, 93);
+ }

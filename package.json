@@ -22,6 +22,16 @@
     "webpack-hot-middleware": "^2.22.3",
     "webpack-merge": "^4.1.3"
   },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "last 2 version",
+    "not dead",
+    "iOS >= 9"
+  ],
   "dependencies": {
     "@babel/core": "7.0.0-beta.42",
     "@babel/preset-env": "7.0.0-beta.42",

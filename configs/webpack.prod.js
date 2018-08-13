@@ -10,7 +10,7 @@ module.exports = merge(config, {
     chunkFilename: '[id].[hash].chunk.js'
   },
   plugins: [
-    new webpack.optimize.UglifyPlugin({
+    new webpack.optimize.UglifyJsPlugin({
       compressor: {
         warnings: false,
         screw_ie8: true

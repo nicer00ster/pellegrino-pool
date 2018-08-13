@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from 'react-modal';
-import { titleCase } from '../utils/helpers';
+// import { titleCase } from '../utils/helpers';
+import { FiXSquare } from 'react-icons/fi';
 import { verifyToken } from '../utils/storage';
 
 class Matches extends React.Component {
@@ -20,11 +21,15 @@ class Matches extends React.Component {
       await fetch('/api/account/verify?token=' + token)
         .then(res => res.json())
         .then(data => {
-          console.log(data);
-          if(data.success) this.setState({
-            uid: data.uid,
-            email: data.email
-          })
+          if(!data.success) {
+            localStorage.removeItem('app');
+            this.setState(prevState => ({ ongoing: [!prevState.ongoing], finished: [!prevState.finished] }))
+          } else {
+            this.setState({
+              uid: data.uid,
+              email: data.email
+            })
+          }
         })
         await fetch('/api/game/matches')
         .then(res => res.json())
@@ -52,30 +57,18 @@ class Matches extends React.Component {
     };
   };
 
-  // componentDidUpdate(prevState) {
-  //   console.log('hi');
-  // };
-
   openModal = data => {
     const { uid, ongoing } = this.state;
     if(data.owner === uid) {
-      this.setState({ selectedGame: data, modalOpen: true  }, () => {
-        console.log(this.state.selectedGame);
-      });
-      // console.log('Works');
-      console.log(data._id);
-      // console.log(data.players);
-      // this.openModal();
+      this.setState({ selectedGame: data, modalOpen: true });
     } else {
       return null;
     }
   };
-  // afterOpenModal = () => this.populateUsers();
+
   closeModal = () => this.setState({ modalOpen: false, selectedGame: [] });
 
   declareWinner = (e, data) => {
-    // console.log(e.currentTarget.textContent);
-    console.log(data);
     let winner = e.currentTarget.textContent;
     fetch('/api/game/matches', {
       headers: {
@@ -89,100 +82,110 @@ class Matches extends React.Component {
     })
     .then(res => res.json())
     .then(results => {
-      console.log(results);
-      const newFinished = {
+      const newResults = {
         ...results.info,
         winner
       };
-
-
       this.setState(prevState => ({
-        finished: [...prevState.finished, newFinished],
+        finished: [...prevState.finished, newResults],
         ongoing: [...prevState.ongoing.filter(index => index._id != results.info._id)]
       }))
       this.closeModal()
     })
   };
 
-  render() {
+  renderMatches() {
     const { ongoing, finished, selectedGame, modalOpen } = this.state;
-    return (
-      <div>
-        <h2>ONGOING MATCHES</h2>
-        <hr/>
-        <table>
-          <tbody>
-            <tr>
-              <th>Match Title</th>
-              <th>Player One</th>
-              <th>Player Two</th>
-            </tr>
-            {ongoing.map((data) => {
-              return (
-                <tr onClick={() => this.openModal(data)} className="select" key={data._id} value={data._id}>
-                  <td>{data.title}</td>
-                  <td>{data.players[0]}</td>
-                  <td>{data.players[1]}</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-        <h2>FINISHED MATCHES</h2>
-        <hr/>
-        <table>
-          <tbody>
-            <tr>
-              <th>Match Title</th>
-              <th>Player One</th>
-              <th>Player Two</th>
-            </tr>
-            {finished.map((data, key) => {
-              return (
-                <tr key={data._id}>
-                  <td className='title'>{data.title}</td>
-                  <td className={data.winner === data.players[0] ? 'winner' : 'loser'}>{data.players[0]}</td>
-                  <td className={data.winner === data.players[1] ? 'winner' : 'loser'}>{data.players[1]}</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-        <Modal
-          className="modal"
-          overlayClassName="modal__overlay"
-          shouldCloseOnOverlayClick={true}
-          isOpen={modalOpen}
-          onAfterOpen={this.afterOpenModal}
-          onRequestClose={this.closeModal}
-          closeTimeoutMS={250}
-          contentLabel="Create a Game">
-          <h2 ref={subtitle => this.subtitle = subtitle}>CHOOSE A WINNER</h2>
-          <form className="modal__players">
-            <table>
-              <tbody>
-                <tr>
-                  <th>Player One</th>
-                  <th>Player Two</th>
-                </tr>
-                <tr>
-                  {selectedGame.hasOwnProperty('title')
-                  ?
-                    <React.Fragment>
-                    <td className="select" onClick={(e) => this.declareWinner(e, selectedGame)}>{selectedGame.players[0]}</td>
-                    <td className="select" onClick={(e) => this.declareWinner(e, selectedGame)}>{selectedGame.players[1]}</td>
-                    </React.Fragment>
+    const value = verifyToken('app');
+    if(value && value.token) {
+      return (
+        <div className="matches">
+          <h2>ONGOING MATCHES</h2>
+          <hr/>
+          <table>
+            <tbody>
+              <tr>
+                <th>Match Title</th>
+                <th>Player One</th>
+                <th>Player Two</th>
+              </tr>
+              {ongoing.map((data) => {
+                return (
+                  <tr onClick={() => this.openModal(data)} className="select" key={data._id} value={data._id}>
+                    <td>{data.title}</td>
+                    <td>{data.players[0]}</td>
+                    <td>{data.players[1]}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+          <h2>FINISHED MATCHES</h2>
+          <hr/>
+          <table>
+            <tbody>
+              <tr>
+                <th>Match Title</th>
+                <th>Player One</th>
+                <th>Player Two</th>
+              </tr>
+              {finished.map((data, key) => {
+                return (
+                  <tr key={data._id}>
+                    <td className='title'>{data.title}</td>
+                    <td className={data.winner === data.players[0] ? 'winner' : 'loser'}>{data.players[0]}</td>
+                    <td className={data.winner === data.players[1] ? 'winner' : 'loser'}>{data.players[1]}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+          <Modal
+            className="modal"
+            overlayClassName="modal__overlay"
+            shouldCloseOnOverlayClick={true}
+            isOpen={modalOpen}
+            onAfterOpen={this.afterOpenModal}
+            onRequestClose={this.closeModal}
+            closeTimeoutMS={250}
+            contentLabel="Create a Game">
+            <h2 ref={subtitle => this.subtitle = subtitle}>CHOOSE A WINNER</h2>
+            <form className="modal__players">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>Player One</th>
+                    <th>Player Two</th>
+                  </tr>
+                  <tr>
+                    {selectedGame.hasOwnProperty('title')
+                    ?
+                      <React.Fragment>
+                      <td className="select" onClick={(e) => this.declareWinner(e, selectedGame)}>{selectedGame.players[0]}</td>
+                      <td className="select" onClick={(e) => this.declareWinner(e, selectedGame)}>{selectedGame.players[1]}</td>
+                      </React.Fragment>
 
-                  :  null
-                  }
-                </tr>
-              </tbody>
-            </table>
-          </form>
-        </Modal>
-      </div>
-    )
+                    :  null
+                    }
+                  </tr>
+                </tbody>
+              </table>
+            </form>
+            <FiXSquare className="modal__close" size={35} onClick={this.closeModal} />
+          </Modal>
+        </div>
+      )
+    } else {
+      return (
+        <h4>You must be logged in to view the match history!</h4>
+      )
+    }
   }
-}
+  render() {
+    return (
+      this.renderMatches()
+    );
+  };
+};
 
 export default Matches;

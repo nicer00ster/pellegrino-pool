@@ -10,7 +10,7 @@ export function verifyToken(key) {
   } catch(err) {
     return null;
   }
-}
+};
 
 export function setToken(key, value) {
   if(!key) {
@@ -21,4 +21,4 @@ export function setToken(key, value) {
   } catch(err) {
     console.error(err);
   }
-}
+};

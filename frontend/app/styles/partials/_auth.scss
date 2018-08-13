@@ -1,6 +1,14 @@
 .auth {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  flex-direction: column;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   &__register {
     margin: 1rem;
     padding-top: 4rem;
@@ -9,15 +17,17 @@
 
 .back__arrow {
   &:hover {
-    transform: translate(-10px);
+    -webkit-transform: translate(-10px);
+            transform: translate(-10px);
   }
 }
 
 .back__arrow, .logout {
   cursor: pointer;
   margin: 15;
+  -webkit-transition: all .25s;
   transition: all .25s;
   &:hover {
-    color: #ff83b0;
+    color: #fbd786;
   }
 }

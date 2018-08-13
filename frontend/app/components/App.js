@@ -19,7 +19,6 @@ export default class App extends React.Component {
       fetch('/api/account/logout?token=' + token)
       .then(res => res.json())
       .then(data => {
-        console.log(data);
         if(data.success) {
           this.setState({ loading: true }, () => {
             setTimeout(() => {
@@ -46,7 +45,7 @@ export default class App extends React.Component {
           : this.props.children
         }
         </main>
-        {/* <Footer /> */}
+        <Footer />
       </div>
     )
   }

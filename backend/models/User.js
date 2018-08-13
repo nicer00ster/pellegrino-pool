@@ -21,6 +21,10 @@ const UserSchema = new mongoose.Schema({
   active: {
     type: Boolean,
     default: false
+  },
+  gamesWon: {
+    type: Number,
+    default: 0
   }
 });
 

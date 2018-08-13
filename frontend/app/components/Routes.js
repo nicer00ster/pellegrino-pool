@@ -6,10 +6,11 @@ import {
   Link,
   Switch
 } from 'react-router-dom';
+
 import App from './App';
 import NotFound from './NotFound';
 import Home from './Home';
-import Ranking from './Ranking';
+import Rankings from './Rankings';
 import Matches from './Matches';
 
 const routes = [
@@ -25,9 +26,9 @@ const routes = [
     component: Home
   },
   {
-    title: 'Ranking',
-    path: '/ranking',
-    component: Ranking
+    title: 'Rankings',
+    path: '/Rankings',
+    component: Rankings
   },
   {
     title: 'Matches',
@@ -67,6 +68,7 @@ export default class Routes extends React.Component {
             {routes.map((route, i) =>
               <Path key={i} {...route} />
             )}
+            <Route path='*' exact={true} component={NotFound} />
           </Switch>
         </App>
       </Router>

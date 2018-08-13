@@ -3,7 +3,6 @@ const autoprefixer = require('autoprefixer');
 const path = require('path');
 const help = require('../helpers');
 
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const NODE_ENV = process.env.NODE_ENV;
@@ -31,46 +30,13 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        use: [
-            "style-loader", // creates style nodes from JS strings
-            "css-loader", // translates CSS into CommonJS
-            "sass-loader" // compiles Sass to CSS, using Node Sass by default
-        ]
+        exclude: /node_modules/,
+        use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
       },
       {
         test: /\.css$/,
-        use: [
-          require.resolve('style-loader'),
-          {
-            loader: require.resolve('css-loader'),
-            options: {
-              importLoaders: 2
-            },
-          },
-        ]
+        use: ['style-loader', 'css-loader', 'postcss-loader']
       },
-      // {
-      //   test: /\.scss$/,
-      //   loader: ExtractTextPlugin.extract({
-      //     fallback: 'style-loader',
-      //     use: [
-      //       {
-      //         loader: 'css-loader',
-      //         options: {
-      //           'sourceMap': true,
-      //           'importLoaders': 1
-      //         }
-      //       },
-      //       {
-      //         loader: 'postcss-loader',
-      //         options: {
-      //           plugins: () => [autoprefixer]
-      //         }
-      //       },
-      //       'sass-loader'
-      //     ]
-      //   })
-      // }
     ]
   },
   plugins: [
@@ -78,16 +44,13 @@ module.exports = {
 
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify(NODE_ENV)
+        // NODE_ENV: JSON.stringify(NODE_ENV)
+        NODE_ENV: JSON.stringify('production') // Uncomment for production build
       }
     }),
     new HtmlWebpackPlugin({
       template: help.root('frontend/public/index.html'),
       inject: 'body'
     }),
-    new ExtractTextPlugin({
-      filename: 'css/[name].[hash].css',
-      disable: !prod
-    })
-  ]
+  ],
 };

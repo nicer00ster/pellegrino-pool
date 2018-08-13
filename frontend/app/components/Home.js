@@ -45,13 +45,11 @@ class Home extends React.Component {
 
   componentDidMount() {
     const value = verifyToken('app');
-    console.log(value);
     if(value && value.token) {
       const { token } = value;
       fetch('/api/account/verify?token=' + token)
         .then(res => res.json())
         .then(data => {
-          console.log(data);
           if(data.success) {
             this.setState({
               token,
@@ -78,8 +76,8 @@ class Home extends React.Component {
   handleLoad = () => this.setState({ loading: !this.state.loading });
   handleEmail = e => this.setState({ email: e.target.value });
   handlePassword = e => this.setState({ password: e.target.value });
-  handleFirstName = e => this.setState({ firstName: e.target.value });
-  handleLastName = e => this.setState({ lastName: e.target.value });
+  handleFirstName = e => this.setState({ firstName: titleCase(e.target.value) });
+  handleLastName = e => this.setState({ lastName: titleCase(e.target.value) });
   handleGameTitle = e => this.setState({ gameTitle: e.target.value });
 
   openModal = () => this.setState({ modalOpen: true });
@@ -100,7 +98,6 @@ class Home extends React.Component {
     })
     .then(res => res.json())
     .then(data => {
-      console.log(data);
       if(data.error) {
         this.handleError(data.error)
         this.createNotification()()
@@ -132,7 +129,6 @@ class Home extends React.Component {
     })
     .then(res => res.json())
     .then(data => {
-      console.log(data);
       if(data.success) {
         setToken('app', { token: data.token })
         this.handleLoad()
@@ -182,10 +178,6 @@ class Home extends React.Component {
         opponent
       })
     })
-    .then(res => res.json())
-    .then(data => {
-      console.log(data);
-    })
     .then(() => {
       this.closeModal();
     });
@@ -234,7 +226,7 @@ class Home extends React.Component {
             <h4>CHOOSE PLAYERS</h4>
             <label>Player 1</label>
             <select disabled>
-              <option label={titleCase(name)} value="AuthedUser">{titleCase(name)}</option>
+              <option label={titleCase(name)} value="AuthedUser">{name}</option>
             </select>
             <label>Player 2</label>
             <select defaultValue={opponent} onChange={e => this.setState({ opponent: e.target.value })}>
@@ -242,7 +234,7 @@ class Home extends React.Component {
              { users
                 ? users.map((user, key) => {
                   return <option key={key}>
-                          {titleCase(user.firstName)}{' '}{titleCase(user.lastName)}
+                          {user.firstName}{' '}{user.lastName}
                          </option>
                   })
                 : null
