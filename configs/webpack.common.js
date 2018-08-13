@@ -6,7 +6,7 @@ const help = require('../helpers');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const NODE_ENV = process.env.NODE_ENV;
-const prod = NODE_ENV === 'production';
+// const prod = NODE_ENV === 'production';
 
 
 module.exports = {
